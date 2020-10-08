@@ -1,4 +1,4 @@
-from typing import Union, Set, List
+from typing import Union, Set, List, Iterable, Collection
 import collections
 
 import chess
@@ -276,6 +276,220 @@ def can_opener(board, move) -> bool:
 
     TODO: should we make something similar for queenside + a-pawn?
     TODO: can-opener refutation? e.g. previous move was can-opener, current move blockades the can-opener pawn?
+    """
+    pass
+
+
+def centralization(board, move_sequence: Union[chess.Move, Iterable[chess.Move]]) -> bool:
+    """
+    moving piece(s) to center of board
+    """
+    if isinstance(move_sequence, chess.Move):
+        move_sequence = [move_sequence]
+    # temporary return; TODO: actually implement
+    return False
+
+
+def centralization_feature_vector(board, move_sequence: Union[chess.Move, Iterable[chess.Move]]) -> List:
+    """
+    returns vector of features describing along what dimensions a move sequence is centralizing
+    """
+    if isinstance(move_sequence, chess.Move):
+        move_sequence = [move_sequence]
+    # temporary return; TODO: actually implement
+    return []
+
+
+def cheapo(board, move) -> bool:
+    """
+    determines whether a move is a cheapo – hoping that an opponent will be too weak to see that the move
+    is actually a bad move, a "primitive trap"
+
+    TODO: should this be hand-crafted (e.g. using move tree + evaluation), searched in database of openings, combo, or more?
+    """
+    pass
+
+
+def closed(board) -> bool:
+    """
+    determines whether or not a position is closed. similar to open.
+    """
+    pass
+
+
+def closed_feature_vector(board) -> List:
+    """
+    similar to open feature vector. properties:
+
+    * interlocking pawn chains
+    * few exchange opportunities
+    * extensive maneurvering behind lines
+    """
+
+
+def combination(board, move_sequence) -> bool:
+    """
+    characterized by a constrained space of move-sequences (paths on the move tree) yielding an advantage
+    """
+    pass
+
+
+def connected_pawns(board, color, pawns: Collection) -> bool:
+    """
+    two or more pawns of same color on adjacent files
+    """
+    pass
+
+
+def connected_passed_pawns(board, color, pawns: Collection) -> bool:
+    """
+    pawns are both passed pawns and connected.
+
+    procedure:
+        pawn_1 is passed_pawn
+        pawn_2 is passed_pawn
+        pawns are connected
+    """
+    pass
+
+
+def connected_rook(board, color, rooks: Collection) -> bool:
+    """
+    rooks on same rank or file without pieces in between them
+    """
+    pass
+
+
+def consolidation(board, move_sequence) -> bool:
+    """
+    improving position by repositioning piece(s) to better square(s), e.g.
+
+    * connecting/coordinating pieces
+    * improving king safety
+    * activating pieces
+    * moving heavy pieces to more secure squares
+    """
+    pass
+
+
+def control_of_center(board, color) -> bool:
+    """
+    does player control center?
+    """
+    pass
+
+
+def control_of_center_feature_vector(board, color) -> List:
+    """
+    to what extent and in what ways does player control center?
+    """
+    pass
+
+
+def control_pawn(board, color, pawn, square=None, file=None, rank=None) -> bool:
+    """
+    does a pawn control a square
+    """
+    assert not all(square=None, file=None, rank=None)
+    # temporary; TODO: actually implement
+    return False
+
+
+def corresponding_squares(board, squares: Collection) -> bool:
+    """
+    squares such that when king moves to one square, opponent's king must go to other (corresponding) square to hold position
+    """
+    pass
+
+
+def counterplay(board, move) -> bool:
+    """
+    when opponent has made aggressive moves recently, player responds by making similarly aggressive moves
+    """
+    pass
+
+
+def cover(board, move) -> bool:
+    """
+    move that protects a piece or controls a square
+    """
+    pass
+
+
+def cramped(board) -> bool:
+    """
+    position in which pieces have very few squares to go to on average
+    """
+    pass
+
+
+def cramped_feature_vector(board) -> List:
+    """
+    feature vector describing in what ways the position is cramped. e.g.:
+
+    * one side's average number of legal moves (outside of a check position) per piece is small
+    * distribution of legal moves per piece fits certain criteria
+    * large number of blockades / locked pawns
+    """
+    pass
+
+
+def critical_square(board, square) -> bool:
+    """
+    an important square in a position
+    TODO: how to implement this
+    """
+    pass
+
+
+def critical_position(board) -> bool:
+    """
+    position in which evaluation shows that advantage structure is about to change
+
+    may be done with combo of eval engine and mining move tree to determine if space of moves keeping
+    advantage structure the same is small
+    """
+    pass
+
+
+def cross_check(board, move) -> bool:
+    """
+    respond to check with a check.
+    previous move was a check, current move gets out of check with move that also puts opponent in check
+    """
+    pass
+
+
+def decoy(board, move) -> bool:
+    """
+    tactic used to lure a piece to particular squaree.
+
+    can be characterized by short-sighted gain, e.g. check or winning material, but looking far enough ahead
+    shows that this is a mistake
+    """
+    pass
+
+
+def defensive_move(board, move) -> bool:
+    """
+    response to an attack that defends piece
+    """
+    pass
+
+
+def deflect(board, move) -> bool:
+    """
+    luring a piece away from a good square. cf. oveerloading
+    """
+    pass
+
+
+def desperado(board, piece, move_sequence=None) -> bool:
+    """
+    * threatened piece sacrificing itself for maximum compensation
+    * ––
+
+    TODO: should this be looked for only when move sequence is available? in model-based sequence case, not static case
     """
     pass
 
