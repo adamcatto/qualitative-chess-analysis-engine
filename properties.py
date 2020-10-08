@@ -1,7 +1,22 @@
-from typing import Union, Set
+from typing import Union, Set, List
 import collections
 
 import chess
+import anytree
+
+white_pieces = ['P', 'R', 'N', 'B', 'Q', 'K']
+black_pieces = ['p', 'r', 'n', 'b', 'q', 'k']
+
+
+"""
+The goal of this `properties` library is to provide functions which compute information, which is
+then to be handed off to functions in the `describe` library. Think of this library as a "backend".
+
+This library mostly computes boolean values, since the `describe` library will mostly communicate 
+whether a position or move has a particular feature, such as whether or not there are doubled rooks.
+However, sometimes we want to give a more in-depth look at the position; for instance, we may want to 
+tell how "open" a position is using a vector of features related to openness of a position. 
+"""
 
 
 def _horizontal_defends(board, defending_square, defended_square) -> bool:
@@ -30,69 +45,100 @@ def _horizontal_defends(board, defending_square, defended_square) -> bool:
     return False
 
 
-def absolute_pin(piece, other):
+def absolute_pin(board, piece, other):
     """
     A pin against the king
     """
     pass
 
 
-def active(piece) -> bool:
+def active(board, piece) -> bool:
     """
     piece is active if it threatens multiple squares of has a number of squares available for next move
     """
     pass
 
 
-def advanced_pawn(pawn) -> bool:
+def advanced_pawn(board, pawn) -> bool:
     """
     pawn on opponent's side of board
     """
     pass
 
 
-def advantage(color) -> bool:
+def advantage(board, color) -> bool:
     """
     take in factors such as space, time, material, threats
     """
     pass
 
 
-def alekhine_gun(color) -> bool:
+def alekhine_gun(board: chess.Board, color: chess.Color) -> bool:
     """
     doubled rooks on file with queen behind them
     procedure:
         if not two rooks and queen on board -> return False
         if not all on same file -> return False
-        if not all coordinated -> return False
         if not rook in front of (rook in front of queen) -> return False
         return True
     """
-    pass
+    pm = {k: v.symbol() for k, v in board.piece_map().items()}
+
+    if color == chess.WHITE:
+        relevant_pieces = white_pieces
+        relevant_case = lambda x: x.upper()
+    else:
+        relevant_pieces = black_pieces
+        relevant_case = lambda x: x.lower()
+
+    piece_count = {piece: 0 for piece, _ in pm.items() for piece in relevant_pieces}
+
+    for square, piece in pm.items():
+        if piece in relevant_pieces:
+            piece_count[piece] += 1
+    if piece_count[relevant_case('r')] < 2 or piece_count[relevant_case('q')] < 1:
+        return False
+
+    rook_squares = []
+    queen_squares = []
+
+    for key, value in pm.items():
+        if value == relevant_case('q'):
+            queen_squares.append(key)
+        if value == relevant_case('r'):
+            rook_squares.append(key)
+
+    if (rook_squares[0] - rook_squares[1]) % 8 != 0:
+        return False
+
+    if (((queen_squares[0] - rook_squares[0]) % 8) != 0) or (min(queen_squares[0], min(rook_squares[0], rook_squares[1])) != queen_squares[0]):
+        return False
+
+    return True
 
 
-def arabian_mate() -> bool:
+def arabian_mate(board: chess.Board) -> bool:
     """
     checkmate when knight and rook trap opponent's king in corner
     """
     pass
 
 
-def attacking(piece) -> Set:
+def attacking(board: chess.Board, piece: chess.Piece) -> Set:
     """
     Set of squares a piece is attacking
     """
     return collections.Set()
 
 
-def attacks(piece, other: chess.Square) -> bool:
+def attacks(board, piece, other: chess.Square) -> bool:
     """
     if piece attacks a square
     """
     pass
 
 
-def back_rank_mate() -> bool:
+def back_rank_mate(board) -> bool:
     """
     checkmate from opponent's rook or queen along back rank, where king is unable to move to the second
     rank because all adjacent squares on the second rank are occupied by player's pieces, and there are
@@ -133,17 +179,17 @@ def back_rank_weakness(board: chess.Board, color: chess.Color) -> bool:
             if chess.square_rank(horizontal_square_) == back_rank and _horizontal_defends(board, horizontal_square_, king_square):
                 return False
 
-        return True
+    return True
 
 
-def backward_pawn(pawn) -> bool:
+def backward_pawn(board, pawn) -> bool:
     """
     pawn behind player's other pawn on adjacent file, can't be advanced without support of another pawn
     """
     pass
 
 
-def bad_bishop(bishop) -> bool:
+def bad_bishop(board, bishop) -> bool:
     """
     bishop behind/defending own pawns
     TODO: should we assign a score to how bad the bishop is? factors include if the pawns have other support,
@@ -152,9 +198,84 @@ def bad_bishop(bishop) -> bool:
     pass
 
 
-def bare_king(color) -> bool:
+def bare_king(board, color) -> bool:
     """
     only king remains for `color`
+    """
+    pass
+
+
+def battery(board, color) -> bool:
+    """
+    any(double rooks on (file v rank), double rook and queen on (file v rank), place bishop and queen on diagonal)
+
+    at least two continuously-moving pieces attacking/x-raying same square
+    """
+    pass
+
+
+def battery_king(board, color) -> bool:
+    """
+    battery AND lined up with king
+    """
+    pass
+
+
+def bind(board, color) -> bool:
+    """
+    tension, player doesn't have many moves to make, tough to break out. situations:
+
+    * advanced pawns
+
+    TODO: enumerate situations / situation-combos, figure out how to represent them
+    """
+    pass
+
+
+def bishop_pair(board, color) -> bool:
+    """
+    player has two bishops, opponent does not
+    """
+    pass
+
+
+def blockade(board, color) -> bool:
+    """
+    piece in front of enemy pawn, stopping its advancement
+
+    TODO: should we have another function for generating blockade feature vector, like with `open_position`?
+    TODO: should there be "verbose mode" for applying feature vector functions?
+    """
+    pass
+
+
+def break_move(board, move) -> bool:
+    """
+    a break – typically a pawn move that gains space
+    """
+    pass
+
+
+def breakthrough(board, move) -> bool:
+    """
+    destroy defensive structure
+    """
+    pass
+
+
+def bridge(board, color) -> bool:
+    """
+    path for king in endgame by providing cover against checks from line pieces
+    """
+    pass
+
+
+def can_opener(board, move) -> bool:
+    """
+    attacking kingside by advancing the h-pawn (to open file near defender's king)
+
+    TODO: should we make something similar for queenside + a-pawn?
+    TODO: can-opener refutation? e.g. previous move was can-opener, current move blockades the can-opener pawn?
     """
     pass
 
@@ -172,6 +293,7 @@ def forced_mate_in_n(board: chess.Board, color_getting_checkmated, num_moves) ->
 
     TODO: complete this
     """
+    root = anytree.AnyNode(id='root')
     if num_moves == 1:
         for mv in board.generate_legal_moves():
             new_board = board.copy()
@@ -180,10 +302,38 @@ def forced_mate_in_n(board: chess.Board, color_getting_checkmated, num_moves) ->
                 return True
         return False
     else:
+
+        for mv in board.generate_legal_moves():
+            new_board = board.copy()
+            new_board.push(mv)
+
         return forced_mate_in_n(board, color_getting_checkmated, num_moves - 1)
 
 
+def open_position(board) -> bool:
+    """
+    features:
 
+    * lack of central pawns
+    * degree of support amongst central pawns
+
+    ========
+
+    maybe something like relu where hitting a threshold of features returns True, else False
+    """
+    pass
+
+
+def open_position_feature_vector(board) -> List:
+    """
+    returns a feature vector numerically describing the dimensions along which a position is open.
+
+    ideas:
+
+    * number of central pawns
+    * degree of support amongst central pawns
+    """
+    return []
 
 
 def threatening(piece) -> Set:
