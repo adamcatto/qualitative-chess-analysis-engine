@@ -781,6 +781,42 @@ def loose_piece(board, piece) -> bool:
     pass
 
 
+def lucena_position(board) -> bool:
+    """
+    look it up
+    """
+    pass
+
+
+def luft(board, move) -> bool:
+    """
+    is move a luft?
+    """
+    pass
+
+
+def majority(board, color) -> bool:
+    """
+    player has larger number of pawns on one flank than opponent does
+    """
+    pass
+
+
+def maroczy_bind(board) -> bool:
+    """
+    bind on light squares in center – typically d5, by placing pawns on c4 and e4
+    """
+    pass
+
+
+def material_style(board, move_sequence) -> bool:
+    pass
+
+
+def material_style_feature_vector(board, move_sequence) -> List:
+    pass
+
+
 def open_position(board) -> bool:
     """
     features:
