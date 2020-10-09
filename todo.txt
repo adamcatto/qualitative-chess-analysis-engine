@@ -1,0 +1,2 @@
+[ ] implement MetaBoard class
+[ ] see todos in properties.py
