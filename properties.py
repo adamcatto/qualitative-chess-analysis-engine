@@ -19,6 +19,10 @@ tell how "open" a position is using a vector of features related to openness of 
 """
 
 
+def _infer_color_from_piece(board, piece: chess.Piece) -> chess.Color:
+    pass
+
+
 def _horizontal_defends(board, defending_square, defended_square) -> bool:
     """
     does piece at `defending_square` defend the `defended_square`?
@@ -494,6 +498,108 @@ def desperado(board, piece, move_sequence=None) -> bool:
     pass
 
 
+def discovered_attack(board, move) -> bool:
+    """
+    moving piece such that other piece it was blocking attacks a piece
+    """
+    pass
+
+
+def discovered_check(board, move) -> bool:
+    """
+    discovered attack on king
+    """
+    pass
+
+
+def double_attack(board, move) -> bool:
+    """
+    one move creates two new attacks.
+
+    idea: difference between attacking set before `move` and attacking set after `move`
+    """
+    pass
+
+
+def double_check(board, move) -> bool:
+    """
+    double attack such that both new attacks are on king
+    """
+    pass
+
+
+def doubled_pawns(board, color) -> bool:
+    """
+    two pawns of same color on same file
+    """
+    pass
+
+
+# TODO: dynamic play?
+
+
+def edge(board) -> chess.Color:
+    """
+    small advantage, returns chess.Color representing player who has edge
+    """
+    pass
+
+
+def en_prise(board) -> chess.Square:
+    """
+    hanging piece
+    """
+    pass
+
+
+def en_passant(board, move) -> bool:
+    """
+    en passant capture
+    """
+    pass
+
+
+def escape_square(board, square: chess.Square) -> bool:
+    """
+    square on second rank for king to run to in case of back-rank check
+    """
+    pass
+
+
+EXPANDED_CENTER = (file + rank for file in ['c', 'd', 'e', 'f'] for rank in ['3', '4', '5', '6'])
+
+
+def exposed_king(board, color) -> bool:
+    """
+    king lacks adjacent pawns to shield it from attack
+    """
+    pass
+
+
+def family_fork(board) -> bool:
+    """
+    knight fork simultaneously checking and attacking queen
+    """
+    pass
+
+
+def fianchetto(board, bishop) -> bool:
+    """
+    bishop on long diagonal (b2/g2 – white; b7/g7 – black)
+
+    idea: nope until you see B{b2,g2,b7,g7} in move sequence, then update board metadata (MetaBoard class);
+    update MetaBoard upon seeing bishop moving away from that square
+    """
+    pass
+
+
+def fianchetto_squares(board) -> Collection:
+    """
+    return squares on which bishops are fianchettoed
+    """
+    return collections.Set()
+
+
 def forced_mate_in_n(board: chess.Board, color_getting_checkmated, num_moves) -> bool:
     """
     for each legal move that `color_getting_checkmated` has, there exists a legal move for the opposing player
@@ -522,6 +628,157 @@ def forced_mate_in_n(board: chess.Board, color_getting_checkmated, num_moves) ->
             new_board.push(mv)
 
         return forced_mate_in_n(board, color_getting_checkmated, num_moves - 1)
+
+
+def forced_move(board, move) -> bool:
+    pass
+
+
+def fork(board, move) -> bool:
+    pass
+
+
+def fortress(board) -> bool:
+    pass
+
+
+def gambit_move(board, move) -> bool:
+    pass
+
+
+def good_bishop(board, bishop) -> bool:
+    pass
+
+
+def greek_gift_sacrifice(board) -> bool:
+    """
+    Bxh7+, Bxh2+ (white – similar for black) against castled king
+    """
+    pass
+
+
+def half_open_file(board, color, file) -> bool:
+    """
+    file on which only one player has no pawns
+    """
+    pass
+
+
+def hanging_pawns(board, pawns) -> bool:
+    """
+    same color pawns on adjacent files, without pawns of same color on files to their sides
+    """
+    pass
+
+
+def hole(board, square) -> bool:
+    """
+    square inside player's side of the board that cannot be controlled by pawn (pawns passed
+    on both adjacent files)
+    """
+    pass
+
+
+def horwitz_bishops(board, bishops) -> bool:
+    """
+    player's bishops controlling adjacent diagonals
+    """
+    pass
+
+
+def hypermodern_position(board) -> bool:
+    """
+    controlling center with pieces from flanks, rather than occupying center with pawns
+    """
+    pass
+
+
+def imbalance_feature_vector(board) -> List:
+    """
+    feature vector consisting of ways in which there exists an imbalance, e.g.
+    central pawns, bishop pair, strong/weak bishop, connected rooks, space, etc.
+    """
+    pass
+
+
+def inactive(board, piece) -> bool:
+    return not active(board, piece)
+
+
+def initiative(board, color) -> bool:
+    pass
+
+
+def interference(board, move) -> bool:
+    """
+    interruption of line or diagonal betweeen attacked piecee and its defender using an interposing piece
+    """
+    pass
+
+
+def intermezzo(board, move) -> bool:
+    """
+    cf. intermediate move, zwischenzug
+    """
+    pass
+
+
+def isolani(board, pawn) -> bool:
+    """
+    isolated d-pawn
+    """
+    pass
+
+
+def isolated_pawn(board, pawn) -> bool:
+    """
+    pawn without same color pawns on adjacent files
+    """
+    pass
+
+
+def italian_bishop(board, bishop) -> bool:
+    """
+    white/black bishop developed to c4/c5
+    """
+    pass
+
+
+def kick(board, move, square) -> bool:
+    """
+    attacking piece on square with `move` such that the piece has to move
+    """
+    pass
+
+
+def king_hunt(board, move_sequence) -> bool:
+    """
+    sequence of attacks on king such that it has to move far from original position
+    """
+    pass
+
+
+def king_walk(board, move_sequence) -> bool:
+    """
+    sequence of king moves such that king gets to safer square
+
+    TODO: do we really need board parameter? doesn't seem like it fits...
+    """
+    pass
+
+
+def liquidation(board, move_sequence) -> bool:
+    """
+    simplification
+    """
+    pass
+
+
+def loose_piece(board, piece) -> bool:
+    """
+    piece vulnerable to opponent attacks b/c it is undefended and cannot easily be withdrawn or supported
+    """
+    pass
 
 
 def open_position(board) -> bool:
