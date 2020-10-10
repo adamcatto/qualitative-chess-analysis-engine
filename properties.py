@@ -843,8 +843,147 @@ def open_position_feature_vector(board) -> List:
     return []
 
 
+def pin(board, piece, other_piece) -> bool:
+    pass
+
+
+def poisoned_pawn(board, pawn) -> bool:
+    pass
+
+
+def positional_sacrifice(board, move) -> bool:
+    pass
+
+
+def promotion(board, move) -> bool:
+    pass
+
+
+def promoted_to(board, move) -> chess.Piece:
+    pass
+
+
+def pseudo_sacrifice(board, move) -> bool:
+    pass
+
+
+def quiet_move(board, move) -> bool:
+    pass
+
+
+def romantic_style(board, move_sequence) -> bool:
+    pass
+
+
+def rook_lift(board, move) -> bool:
+    pass
+
+
+def sacrifice(board, move) -> bool:
+    pass
+
+
+def sham_sacrifice(board, move) -> bool:
+    pass
+
+
+def skewer(board, move) -> bool:
+    pass
+
+
+def smothered_mate(board, move) -> bool:
+    pass
+
+
+def spanish_bishop(board, bishop) -> bool:
+    """
+    white bishop on b5
+    """
+    pass
+
+
+def squeeze(board, pawn_move) -> bool:
+    pass
+
+
+def support_point(board, square) -> bool:
+    """
+    square that cannot be attacked by a pawn
+    """
+    pass
+
+
+def tension(board) -> List:
+    """
+    A position in which there are one or more exchanges possible. Represented as
+
+    * how many possible exchanges there are
+    * what the exchange combos are
+    * what squares are involveed
+    """
+    pass
+
+
+# TODO: implement `thematic` move?
+
+
 def threatening(piece) -> Set:
     """
     set of pieces that `piece` threatens at a given board state
     """
+    pass
+
+
+def triangulation(board, move_sequence) -> bool:
+    """
+    A technique used in king and pawn endgames (less commonly seen with other pieces) to lose a tempo and gain the opposition
+    """
+    pass
+
+
+def tripled_pawns(board) -> bool:
+    pass
+
+
+def undermining(board, move) -> bool:
+    pass
+
+
+def unpinning(board, move) -> bool:
+    pass
+
+
+def vacating_sacrifice(board, move) -> bool:
+    pass
+
+
+def valve(board, move) -> bool:
+    pass
+
+
+def vanished_center(board) -> bool:
+    pass
+
+
+def waiting_move(board, move) -> bool:
+    pass
+
+
+def weak_square(board, square, color) -> bool:
+    pass
+
+
+def windmill(board, move_sequence) -> bool:
+    pass
+
+
+def wrong_rook_pawn(board, pawn) -> bool:
+    pass
+
+
+def x_ray(board, attacking_piece, attacked_piece) -> bool:
+    pass
+
+
+def zugzwang(board, color) -> bool:
     pass
