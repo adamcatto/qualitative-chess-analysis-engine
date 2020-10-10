@@ -4,6 +4,29 @@ import collections
 import chess
 import anytree
 
+
+__all__ = ['absolute_pin', 'active', 'advanced_pawn', 'advantage', 'alekhine_gun', 'arabian_mate', 'attacking',
+           'attacks', 'back_rank_mate', 'back_rank_weakness', 'backward_pawn', 'bad_bishop', 'bare_king', 'battery',
+           'battery_king', 'bind', 'bishop_pair', 'blockade', 'break_move', 'breakthrough', 'bridge', 'can_opener',
+           'centralization', 'centralization_feature_vector', 'cheapo', 'closed', 'closed_feature_vector', 'combination',
+           'connected_pawns', 'connected_passed_pawns', 'connected_rook', 'consolidation', 'control_of_center',
+           'control_of_center_feature_vector', 'control_pawn', 'corresponding_squares', 'counterplay', 'cover',
+           'cramped', 'cramped_feature_vector', 'critical_square', 'critical_position', 'cross_check', 'decoy',
+           'defensive_move', 'deflect', 'desperado', 'discovered_attack', 'discovered_check', 'double_attack',
+           'double_check',
+           'doubled_pawns', 'edge', 'en_prise', 'en_passant', 'escape_square', 'exposed_king', 'family_fork',
+           'fianchetto', 'fianchetto_squares', 'forced_mate_in_n', 'forced_move', 'fork', 'fortress', 'gambit_move',
+           'good_bishop', 'greek_gift_sacrifice', 'half_open_file', 'hanging_pawns', 'hole', 'horwitz_bishops',
+           'hypermodern_position', 'imbalance_feature_vector', 'inactive', 'initiative', 'interference', 'intermezzo',
+           'isolani', 'isolated_pawn', 'italian_bishop', 'kick', 'king_hunt', 'king_walk', 'liquidation', 'loose_piece',
+           'lucena_position', 'luft', 'majority', 'maroczy_bind', 'material_style', 'material_style_feature_vector',
+           'open_position', 'open_position_feature_vector', 'pin', 'poisoned_pawn', 'positional_sacrifice', 'promotion',
+           'promoted_to', 'pseudo_sacrifice', 'quiet_move', 'romantic_style', 'rook_lift', 'sacrifice', 'sham_sacrifice',
+           'skewer', 'smothered_mate', 'spanish_bishop', 'squeeze', 'support_point', 'tension', 'threatening',
+           'triangulation', 'tripled_pawns', 'undermining', 'unpinning', 'vacating_sacrifice', 'valve',
+           'vanished_center', 'waiting_move', 'weak_square', 'windmill', 'wrong_rook_pawn', 'x_ray', 'zugzwang']
+
+
 white_pieces = ['P', 'R', 'N', 'B', 'Q', 'K']
 black_pieces = ['p', 'r', 'n', 'b', 'q', 'k']
 
