@@ -1,4 +1,4 @@
-from typing import Union, Set, List, Iterable, Collection
+from typing import Union, Set, List, Iterable, Collection, Tuple, Callable, Dict
 import collections
 
 import chess
@@ -6,7 +6,7 @@ import anytree
 
 
 __all__ = ['absolute_pin', 'active', 'advanced_pawn', 'advantage', 'alekhine_gun', 'arabian_mate', 'attacking',
-           'attacks', 'back_rank_mate', 'back_rank_weakness', 'backward_pawn', 'bad_bishop', 'bare_king', 'battery',
+           'attacks', 'back_rank_mate', 'back_rank_weakness', 'backward_pawns', 'bad_bishop', 'bare_king', 'battery',
            'battery_king', 'bind', 'bishop_pair', 'blockade', 'break_move', 'breakthrough', 'bridge', 'can_opener',
            'centralization', 'centralization_feature_vector', 'cheapo', 'closed', 'closed_feature_vector', 'combination',
            'connected_pawns', 'connected_passed_pawns', 'connected_rook', 'consolidation', 'control_of_center',
@@ -40,6 +40,24 @@ whether a position or move has a particular feature, such as whether or not ther
 However, sometimes we want to give a more in-depth look at the position; for instance, we may want to 
 tell how "open" a position is using a vector of features related to openness of a position. 
 """
+
+
+def _relevant_pieces_cases(color) -> Tuple[List, Callable]:
+    if color == chess.WHITE:
+        relevant_pieces = white_pieces
+        relevant_case = lambda x: x.upper()
+    else:
+        relevant_pieces = black_pieces
+        relevant_case = lambda x: x.lower()
+    return relevant_pieces, relevant_case
+
+
+def _filter_piece_map_by_color(pm, color) -> Dict[chess.Square, chess.Piece]:
+    if color == chess.BLACK:
+        pm = {k: v for k, v in pm.items() if v.symbol() == v.symbol().lower()}
+    else:
+        pm = {k: v for k, v in pm.items() if v.symbol() == v.symbol().upper()}
+    return pm
 
 
 def _infer_color_from_piece(board, piece: chess.Piece) -> chess.Color:
@@ -111,13 +129,7 @@ def alekhine_gun(board: chess.Board, color: chess.Color) -> bool:
     """
     pm = {k: v.symbol() for k, v in board.piece_map().items()}
 
-    if color == chess.WHITE:
-        relevant_pieces = white_pieces
-        relevant_case = lambda x: x.upper()
-    else:
-        relevant_pieces = black_pieces
-        relevant_case = lambda x: x.lower()
-
+    relevant_pieces, relevant_case = _relevant_pieces_cases(color)
     piece_count = {piece: 0 for piece, _ in pm.items() for piece in relevant_pieces}
 
     for square, piece in pm.items():
@@ -209,11 +221,37 @@ def back_rank_weakness(board: chess.Board, color: chess.Color) -> bool:
     return True
 
 
-def backward_pawn(board, pawn) -> bool:
+def backward_pawns(board: chess.Board, piece_map: Dict[chess.Square, chess.Piece],
+                   color: chess.Color) -> List[Tuple[chess.FILE_NAMES, chess.Square]]:
     """
-    pawn behind player's other pawn on adjacent file, can't be advanced without support of another pawn
+    pawn behind player's other pawns on adjacent file, can't be advanced without support of another pawn
     """
-    pass
+    backward_pawn_list = []
+    relevant_pieces, relevant_case = _relevant_pieces_cases(color)
+    pm = _filter_piece_map_by_color(piece_map, color)
+    pawn_map: Dict[chess.Square, chess.Piece] = {k: v for k, v in pm.items() if v.symbol() == relevant_case('p')}
+
+    for square, pawn in pawn_map:
+        left_right = (False, False)
+        square_file, square_rank = chess.square_file(square), chess.square_rank(square)
+        left_file, right_file = square_file - 1, square_file + 1
+
+        for square_, pawn_ in pawn_map:
+            if chess.square_file(square_) == left_file:
+                if chess.square_rank(square_) > square_rank:
+                    left_right[0] = True
+                else:
+                    break
+            elif chess.square_file(square_) == right_file:
+                if chess.square_rank(square_) > square_rank:
+                    left_right[1] = True
+                else:
+                    break
+
+        if left_right == (True, True):
+            backward_pawn_list.append((square, pawn))
+
+    return backward_pawn_list
 
 
 def bad_bishop(board, bishop) -> bool:
