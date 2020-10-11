@@ -1,2 +1,3 @@
 [ ] implement MetaBoard class
 [ ] see todos in properties.py
+[ ] interesting exercise: can we construct a reasonable board from its metadata description? (probably use neural network)

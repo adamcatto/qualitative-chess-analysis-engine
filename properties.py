@@ -5,7 +5,7 @@ import chess
 import anytree
 
 
-__all__ = ['absolute_pin', 'active', 'advanced_pawn', 'advantage', 'alekhine_gun', 'arabian_mate', 'attacking',
+__all__ = ['absolute_pin', 'active', 'advanced_pawns', 'advantage', 'alekhine_gun', 'arabian_mate', 'attacking',
            'attacks', 'back_rank_mate', 'back_rank_weakness', 'backward_pawns', 'bad_bishop', 'bare_king', 'battery',
            'battery_king', 'bind', 'bishop_pair', 'blockade', 'break_move', 'breakthrough', 'bridge', 'can_opener',
            'centralization', 'centralization_feature_vector', 'cheapo', 'closed', 'closed_feature_vector', 'combination',
@@ -60,10 +60,6 @@ def _filter_piece_map_by_color(pm, color) -> Dict[chess.Square, chess.Piece]:
     return pm
 
 
-def _infer_color_from_piece(board, piece: chess.Piece) -> chess.Color:
-    pass
-
-
 def _horizontal_defends(board, defending_square, defended_square) -> bool:
     """
     does piece at `defending_square` defend the `defended_square`?
@@ -90,7 +86,7 @@ def _horizontal_defends(board, defending_square, defended_square) -> bool:
     return False
 
 
-def absolute_pin(board, piece, other):
+def absolute_pin(board, piece_map, piece, other):
     """
     A pin against the king
     """
@@ -104,11 +100,19 @@ def active(board, piece) -> bool:
     pass
 
 
-def advanced_pawn(board, pawn) -> bool:
+def advanced_pawns(board, piece_map) -> List[Tuple[chess.Square, chess.Piece]]:
     """
     pawn on opponent's side of board
     """
-    pass
+    ap = []
+    for square, piece in piece_map:
+        if piece.color == chess.WHITE:
+            if piece.piece_type == chess.PAWN and chess.square_rank(square) >= 5:
+                ap.append((square, piece))
+        else:
+            if piece.piece_type == chess.PAWN and chess.square_rank(square) < 5:
+                ap.append((square, piece))
+    return ap
 
 
 def advantage(board, color) -> bool:
