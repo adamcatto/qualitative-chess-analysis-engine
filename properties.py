@@ -238,32 +238,45 @@ def backward_pawns(board: chess.Board, piece_map: Dict[chess.Square, chess.Piece
 
         for square_, pawn_ in pawn_map:
             if chess.square_file(square_) == left_file:
-                if chess.square_rank(square_) > square_rank:
-                    left_right[0] = True
+                if color == chess.WHITE:
+                    if chess.square_rank(square_) > square_rank:
+                        left_right[0] = True
+                    else:
+                        break
                 else:
-                    break
-            elif chess.square_file(square_) == right_file:
-                if chess.square_rank(square_) > square_rank:
-                    left_right[1] = True
-                else:
-                    break
+                    if chess.square_rank(square_) < square_rank:
+                        left_right[0] = True
+                    else:
+                        break
 
+            elif chess.square_file(square_) == right_file:
+                if color == chess.WHITE:
+                    if chess.square_rank(square_) > square_rank:
+                        left_right[1] = True
+                    else:
+                        break
+                else:
+                    if chess.square_rank(square_) < square_rank:
+                        left_right[1] = True
+                    else:
+                        break
         if left_right == (True, True):
             backward_pawn_list.append((square, pawn))
 
     return backward_pawn_list
 
 
-def bad_bishop(board, bishop) -> bool:
+def bad_bishop(board: chess.Board, piece_map: Dict[chess.Square, chess.Piece], square) -> bool:
     """
     bishop behind/defending own pawns
     TODO: should we assign a score to how bad the bishop is? factors include if the pawns have other support,
           how far the bishop can move without x amount of disadvantage, etc.
     """
-    pass
+    bishop = board.piece_at(square)
+    color = bishop.color
 
 
-def bare_king(board, color) -> bool:
+def bare_king(board, piece_map, color) -> bool:
     """
     only king remains for `color`
     """
