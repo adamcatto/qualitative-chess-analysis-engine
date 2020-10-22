@@ -2,7 +2,7 @@ import chess
 import chess.pgn
 from io import StringIO
 
-from properties import back_rank_weakness, alekhine_gun, forced_mate_in_n
+from properties import alekhine_gun, forced_mate_in_n
 
 
 board_ = chess.Board()
@@ -20,4 +20,4 @@ board1.set_board_fen('4r1k1/2rq1npp/2p1p3/3p4/pP1P4/P1R1PPP1/2R2KBP/2Q5')
 print('\n\n')
 print(board1)
 print(alekhine_gun(board1, chess.WHITE))
-print(forced_mate_in_n(board1, chess.BLACK, 5))
+#print(forced_mate_in_n(board1, chess.BLACK, 5))

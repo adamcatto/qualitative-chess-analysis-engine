@@ -9,7 +9,7 @@ __all__ = ['absolute_pin', 'active', 'advanced_pawns', 'advantage', 'alekhine_gu
            'attacks', 'back_rank_mate', 'back_rank_weakness', 'backward_pawns', 'bad_bishop', 'bare_king', 'battery',
            'battery_king', 'bind', 'bishop_pair', 'blockade', 'break_move', 'breakthrough', 'bridge', 'can_opener',
            'centralization', 'centralization_feature_vector', 'cheapo', 'closed', 'closed_feature_vector', 'combination',
-           'connected_pawns', 'connected_passed_pawns', 'connected_rook', 'consolidation', 'control_of_center',
+           'connected_pawns', 'connected_passed_pawns', 'connected_rooks', 'consolidation', 'control_of_center',
            'control_of_center_feature_vector', 'control_pawn', 'corresponding_squares', 'counterplay', 'cover',
            'cramped', 'cramped_feature_vector', 'critical_square', 'critical_position', 'cross_check', 'decoy',
            'defensive_move', 'deflect', 'desperado', 'discovered_attack', 'discovered_check', 'double_attack',
@@ -35,10 +35,10 @@ black_pieces = ['p', 'r', 'n', 'b', 'q', 'k']
 The goal of this `properties` library is to provide functions which compute information, which is
 then to be handed off to functions in the `describe` library. Think of this library as a "backend".
 
-This library mostly computes boolean values, since the `describe` library will mostly communicate 
+This library mostly computes boolean values, since the `describe` library will mostly communicate
 whether a position or move has a particular feature, such as whether or not there are doubled rooks.
-However, sometimes we want to give a more in-depth look at the position; for instance, we may want to 
-tell how "open" a position is using a vector of features related to openness of a position. 
+However, sometimes we want to give a more in-depth look at the position; for instance, we may want to
+tell how "open" a position is using a vector of features related to openness of a position.
 """
 
 
@@ -132,6 +132,7 @@ def alekhine_gun(board: chess.Board, color: chess.Color) -> bool:
         return True
     """
     pm = {k: v.symbol() for k, v in board.piece_map().items()}
+    print(dict(sorted(pm.items(), key=lambda x: x[0], reverse=False)))
 
     relevant_pieces, relevant_case = _relevant_pieces_cases(color)
     piece_count = {piece: 0 for piece, _ in pm.items() for piece in relevant_pieces}
@@ -141,6 +142,7 @@ def alekhine_gun(board: chess.Board, color: chess.Color) -> bool:
             piece_count[piece] += 1
     if piece_count[relevant_case('r')] < 2 or piece_count[relevant_case('q')] < 1:
         return False
+    print(piece_count)
 
     rook_squares = []
     queen_squares = []
@@ -150,6 +152,7 @@ def alekhine_gun(board: chess.Board, color: chess.Color) -> bool:
             queen_squares.append(key)
         if value == relevant_case('r'):
             rook_squares.append(key)
+    print(rook_squares, queen_squares)
 
     if (rook_squares[0] - rook_squares[1]) % 8 != 0:
         return False
@@ -167,11 +170,11 @@ def arabian_mate(board: chess.Board) -> bool:
     pass
 
 
-def attacking(board: chess.Board, piece: chess.Piece) -> Set:
+def attacking(board: chess.Board, piece: chess.Piece) -> set:
     """
     Set of squares a piece is attacking
     """
-    return collections.Set()
+    return set()
 
 
 def attacks(board, piece, other: chess.Square) -> bool:
@@ -224,12 +227,12 @@ def back_rank_weakness(board: chess.Board, color: chess.Color) -> bool:
 
     return True
 
-
+"""
 def backward_pawns(board: chess.Board, piece_map: Dict[chess.Square, chess.Piece],
                    color: chess.Color) -> List[Tuple[chess.FILE_NAMES, chess.Square]]:
-    """
+
     pawn behind player's other pawns on adjacent file, can't be advanced without support of another pawn
-    """
+
     backward_pawn_list = []
     relevant_pieces, relevant_case = _relevant_pieces_cases(color)
     pm = _filter_piece_map_by_color(piece_map, color)
@@ -268,7 +271,7 @@ def backward_pawns(board: chess.Board, piece_map: Dict[chess.Square, chess.Piece
             backward_pawn_list.append((square, pawn))
 
     return backward_pawn_list
-
+"""
 
 def bad_bishop(board: chess.Board, piece_map: Dict[chess.Square, chess.Piece], square) -> bool:
     """
@@ -435,7 +438,7 @@ def connected_passed_pawns(board, color, pawns: Collection) -> bool:
     pass
 
 
-def connected_rook(board, color, rooks: Collection) -> bool:
+def connected_rooks(board, color, rooks: Collection) -> bool:
     """
     rooks on same rank or file without pieces in between them
     """
@@ -477,9 +480,18 @@ def control_pawn(board, color, pawn, square=None, file=None, rank=None) -> bool:
     return False
 
 
+def corralled_knight(board, piece_map) -> bool:
+    """
+    knight on edge of board, opposing bishop set up in expanded center of board such that it blocks off squares for
+    knight to move to
+    """
+    pass
+
+
 def corresponding_squares(board, squares: Collection) -> bool:
     """
-    squares such that when king moves to one square, opponent's king must go to other (corresponding) square to hold position
+    squares such that when king moves to one square, opponent's king must go to other (corresponding) square to
+    hold position
     """
     pass
 
