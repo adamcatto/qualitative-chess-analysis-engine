@@ -142,16 +142,15 @@ def advanced_pawns(board, piece_map) -> List[Tuple[chess.Square, chess.Piece]]:
     """
     pawn on opponent's side of board
     """
-    ap = []
+    adv_pawns_list = []
     for square, piece in piece_map:
         if piece.color == chess.WHITE:
             if piece.piece_type == chess.PAWN and chess.square_rank(square) >= 5:
-                ap.append((square, piece))
+                adv_pawns_list.append((square, piece))
         else:
             if piece.piece_type == chess.PAWN and chess.square_rank(square) < 5:
-                ap.append((square, piece))
-    return ap
-
+                adv_pawns_list.append((square, piece))
+    return adv_pawns_list
 
 def advantage(board, color) -> bool:
     """
