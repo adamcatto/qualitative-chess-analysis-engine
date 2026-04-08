@@ -312,35 +312,75 @@ def backward_pawns(board: chess.Board, piece_map: Dict[chess.Square, chess.Piece
 
 def bad_bishop(board: chess.Board, piece_map: Dict[chess.Square, chess.Piece], square) -> bool:
     """
-    bishop behind/defending own pawns
-    A bishop is "bad" when most of its own pawns are fixed on the same color squares as the bishop,
-    limiting its scope and mobility.
+    A bishop is "bad" when at least one of its own locked pawns lies on one of its diagonal rays,
+    blocking the bishop's access to the rest of the board (especially the center).
+    A pawn is "locked" when an enemy pawn directly blocks its advance.
     """
     bishop = board.piece_at(square)
     if bishop is None or bishop.piece_type != chess.BISHOP:
         return False
 
     color = bishop.color
+    advance = 1 if color == chess.WHITE else -1
 
-    # Determine the square color of the bishop (light=True if square sum is even)
-    bishop_on_light = (chess.square_file(square) + chess.square_rank(square)) % 2 == 0
+    def is_locked(pawn_sq: chess.Square) -> bool:
+        front_rank = chess.square_rank(pawn_sq) + advance
+        if not (0 <= front_rank <= 7):
+            return False
+        front_sq = chess.square(chess.square_file(pawn_sq), front_rank)
+        blocking = board.piece_at(front_sq)
+        return (
+            blocking is not None
+            and blocking.piece_type == chess.PAWN
+            and blocking.color != color
+        )
 
-    # Find all same-color pawns and check how many are on the same square color as the bishop
+    def on_bishop_diagonal(pawn_sq: chess.Square) -> bool:
+        """
+        Returns True if pawn_sq lies on one of the bishop's four diagonal rays
+        AND is between the bishop and the center (i.e. obstructs access inward).
+        """
+        b_file, b_rank = chess.square_file(square), chess.square_rank(square)
+        p_file, p_rank = chess.square_file(pawn_sq), chess.square_rank(pawn_sq)
+
+        file_diff = p_file - b_file
+        rank_diff = p_rank - b_rank
+
+        # Must be on a diagonal: |file_diff| == |rank_diff|
+        if abs(file_diff) != abs(rank_diff) or file_diff == 0:
+            return False
+
+        # Direction of this diagonal ray from bishop toward pawn
+        file_step = 1 if file_diff > 0 else -1
+        rank_step = 1 if rank_diff > 0 else -1
+
+        # Check all squares between bishop and pawn on the ray are empty
+        # (bishop must have unobstructed line to the pawn for it to be the blocker)
+        steps = abs(file_diff)
+        for i in range(1, steps):
+            intermediate = chess.square(b_file + i * file_step, b_rank + i * rank_step)
+            if board.piece_at(intermediate) is not None:
+                return False
+
+        # The pawn is on the diagonal ray and is the first piece blocking the bishop
+        # Check it's blocking access toward the center (files c-f, ranks 3-6)
+        center_file = 3.5  # between d and e files (0-indexed: 3 and 4)
+        center_rank = 3.5
+        bishop_center_file_dist = abs(b_file - center_file)
+        pawn_center_file_dist = abs(p_file - center_file)
+
+        # Pawn is between bishop and center on this diagonal
+        return pawn_center_file_dist < bishop_center_file_dist
+
     same_color_pawns = [
         sq for sq, piece in piece_map.items()
         if piece.piece_type == chess.PAWN and piece.color == color
     ]
 
-    if not same_color_pawns:
-        return False
-
-    pawns_on_bishop_color = sum(
-        1 for sq in same_color_pawns
-        if ((chess.square_file(sq) + chess.square_rank(sq)) % 2 == 0) == bishop_on_light
+    return any(
+        is_locked(pawn_sq) and on_bishop_diagonal(pawn_sq)
+        for pawn_sq in same_color_pawns
     )
-
-    # Bishop is "bad" if majority of own pawns share its square color
-    return pawns_on_bishop_color > len(same_color_pawns) / 2
 
 
 def bare_king(board, piece_map, color) -> bool:
@@ -488,7 +528,7 @@ def connected_pawns(board, color, pawns: Collection) -> bool:
 
 def connected_passed_pawns(board, color, pawns: Collection) -> bool:
     """
-    pawns are both passed pawns and connected.
+    pawns are both passed_pawn and connected.
 
     procedure:
         pawn_1 is passed_pawn
