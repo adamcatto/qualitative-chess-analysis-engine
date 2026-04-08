@@ -313,11 +313,34 @@ def backward_pawns(board: chess.Board, piece_map: Dict[chess.Square, chess.Piece
 def bad_bishop(board: chess.Board, piece_map: Dict[chess.Square, chess.Piece], square) -> bool:
     """
     bishop behind/defending own pawns
-    TODO: should we assign a score to how bad the bishop is? factors include if the pawns have other support,
-          how far the bishop can move without x amount of disadvantage, etc.
+    A bishop is "bad" when most of its own pawns are fixed on the same color squares as the bishop,
+    limiting its scope and mobility.
     """
     bishop = board.piece_at(square)
+    if bishop is None or bishop.piece_type != chess.BISHOP:
+        return False
+
     color = bishop.color
+
+    # Determine the square color of the bishop (light=True if square sum is even)
+    bishop_on_light = (chess.square_file(square) + chess.square_rank(square)) % 2 == 0
+
+    # Find all same-color pawns and check how many are on the same square color as the bishop
+    same_color_pawns = [
+        sq for sq, piece in piece_map.items()
+        if piece.piece_type == chess.PAWN and piece.color == color
+    ]
+
+    if not same_color_pawns:
+        return False
+
+    pawns_on_bishop_color = sum(
+        1 for sq in same_color_pawns
+        if ((chess.square_file(sq) + chess.square_rank(sq)) % 2 == 0) == bishop_on_light
+    )
+
+    # Bishop is "bad" if majority of own pawns share its square color
+    return pawns_on_bishop_color > len(same_color_pawns) / 2
 
 
 def bare_king(board, piece_map, color) -> bool:
