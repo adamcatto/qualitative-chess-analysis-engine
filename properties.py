@@ -86,11 +86,49 @@ def _horizontal_defends(board, defending_square, defended_square) -> bool:
     return False
 
 
-def absolute_pin(board, piece_map, piece, other):
+def absolute_pin(board: chess.Board, piece_map: Dict[chess.Square, chess.Piece],
+                 piece: chess.Square, other: chess.Square) -> bool:
     """
-    A pin against the king
+    A pin against the king.
+
+    Returns True if the piece on `piece` square is absolutely pinned by the piece on `other` square,
+    meaning:
+      1. The piece on `piece` is between a sliding attacker and its own king.
+      2. Moving it would expose the king to check (i.e. it is illegal to move it off the pin ray).
+      3. The pinning attacker is specifically the piece on `other`.
+
+    Parameters
+    ----------
+    board      : current chess.Board position
+    piece_map  : mapping of square -> chess.Piece (used for piece lookup)
+    piece      : square of the potentially pinned piece
+    other      : square of the piece that is doing the pinning
     """
-    pass
+    pinned_piece = board.piece_at(piece)
+    pinning_piece = board.piece_at(other)
+
+    if pinned_piece is None or pinning_piece is None:
+        return False
+
+    # Only sliding pieces (bishop, rook, queen) can create an absolute pin.
+    if pinning_piece.piece_type not in (chess.BISHOP, chess.ROOK, chess.QUEEN):
+        return False
+
+    # The two pieces must be on opposite sides (pin is always attacker vs. defender).
+    if pinned_piece.color == pinning_piece.color:
+        return False
+
+    # python-chess: is_pinned(color, square) returns True iff moving the piece on
+    # `square` of `color` would expose that side's king to check.
+    if not board.is_pinned(pinned_piece.color, piece):
+        return False
+
+    # Confirm that `other` is the actual source of the pin: the pin ray from the
+    # pinned piece's king through `piece` must pass through `other`.
+    # board.pin(color, square) returns a SquareSet of all squares on the pin ray
+    # (including the king and the attacker at the far end).
+    pin_ray: chess.SquareSet = board.pin(pinned_piece.color, piece)
+    return other in pin_ray
 
 
 def active(board, piece) -> bool:
